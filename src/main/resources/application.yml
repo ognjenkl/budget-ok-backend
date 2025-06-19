@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/budgetok}
+    username: ${SPRING_DATASOURCE_USERNAME:budgetok}
+    password: ${SPRING_DATASOURCE_PASSWORD:budgetok}
+    driver-class-name: org.postgresql.Driver
+
+  jdbc:
+    template:
+      fetch-size: 100
+      max-rows: 500
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+    contexts: local
+    default-schema: public
+    enabled: true
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    liquibase: INFO
+    com.ognjen.budgetok: DEBUG
