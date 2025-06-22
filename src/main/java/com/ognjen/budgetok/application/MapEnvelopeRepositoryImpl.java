@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class EnvelopeRepositoryImpl implements EnvelopeRepository {
+public class MapEnvelopeRepositoryImpl implements EnvelopeRepository {
 
   Map<Long, Envelope> envelopes = new HashMap<>();
 
