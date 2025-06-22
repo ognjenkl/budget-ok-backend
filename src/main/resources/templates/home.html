@@ -3,12 +3,67 @@
 <head>
     <title>Home</title>
     <meta charset="UTF-8">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .actions {
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
     <div>
-        <h1>Hello World!</h1>
-        <p>Welcome to BudgetOK!</p>
-        <form th:action="@{/logout}" method="post">
+        <h1>Welcome to BudgetOK!</h1>
+        
+        <div style="margin: 20px 0;">
+            <form th:action="@{/api/envelopes}" method="post">
+                <button type="submit">Create New Envelope</button>
+            </form>
+        </div>
+
+        <h2>Your Envelopes</h2>
+        <div th:if="${not #lists.isEmpty(envelopes)}">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Budget</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="envelope : ${envelopes}">
+                        <td>
+                            <a th:href="@{/api/envelopes/} + ${envelope.id}" th:text="${envelope.name}">Envelope Name</a>
+                        </td>
+                        <td th:text="${envelope.budget}">0.00</td>
+                        <td class="actions">
+                            <button>Edit</button>
+                            <button>Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${#lists.isEmpty(envelopes)}">
+            <p>No envelopes found. Create your first envelope!</p>
+        </div>
+
+        <form th:action="@{/logout}" method="post" style="margin-top: 20px;">
             <button type="submit">Logout</button>
         </form>
     </div>

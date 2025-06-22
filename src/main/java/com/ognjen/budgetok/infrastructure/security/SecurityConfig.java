@@ -24,9 +24,22 @@ public class SecurityConfig {
     http
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers(loginPath, "/error").permitAll()
+            // Public endpoints
+            .requestMatchers(
+                loginPath, 
+                "/error",
+                "/css/**",
+                "/js/**",
+                "/webjars/**"
+            ).permitAll()
+            // API security
             .requestMatchers("/api/test/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/test/**").authenticated()
+            .requestMatchers("/api/**").authenticated()
+            // Web pages and API endpoints
+            .requestMatchers("/home").authenticated()
+            // Envelope API endpoints
+            .requestMatchers("/api/envelopes/**").authenticated()
             .anyRequest().authenticated()
         )
         .formLogin(form -> {
