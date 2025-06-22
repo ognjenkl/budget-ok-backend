@@ -9,4 +9,6 @@ public interface EnvelopeService {
   List<Envelope> getAllEnvelopes();
 
   Envelope getEnvelopeById(Long id);
+  
+  void addItemToEnvelope(Long envelopeId, EnvelopeItem item);
 }
