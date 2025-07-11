@@ -30,7 +30,8 @@ public class SecurityConfig {
                 "/error",
                 "/css/**",
                 "/js/**",
-                "/webjars/**"
+                "/webjars/**",
+                "api/envelopes/**"
             ).permitAll()
             // API security
             .requestMatchers("/api/test/admin/**").hasRole("ADMIN")

@@ -3,7 +3,9 @@ package com.ognjen.budgetok.presentation;
 import com.ognjen.budgetok.application.Envelope;
 import com.ognjen.budgetok.application.EnvelopeItem;
 import com.ognjen.budgetok.application.EnvelopeService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,17 +21,25 @@ public class EnvelopeController {
 
   private final EnvelopeService service;
 
+//  @PostMapping
+//  public RedirectView createEnvelope() {
+//    Envelope envelope = Envelope.builder()
+//        .name("New Envelope")
+//        .budget(100.0)
+//        .build();
+//
+//    Envelope createdEnvelope = service.createEnvelope(envelope);
+//    System.out.println("Envelope created successfully with id: " + createdEnvelope.getId());
+//
+//    return new RedirectView("/home");
+//  }
+
   @PostMapping
-  public RedirectView createEnvelope() {
-    Envelope envelope = Envelope.builder()
-        .name("New Envelope")
-        .budget(100.0)
-        .build();
-
+  public ResponseEntity<Envelope> createEnvelope(@RequestBody Envelope envelope) {
     Envelope createdEnvelope = service.createEnvelope(envelope);
-    System.out.println("Envelope created successfully with id: " + createdEnvelope.getId());
-
-    return new RedirectView("/home");
+    return ResponseEntity
+        .status(201)
+        .body(createdEnvelope);
   }
 
   @GetMapping("/{id}")
@@ -60,5 +70,11 @@ public class EnvelopeController {
     service.addItemToEnvelope(envelopeId, item);
 
     return new RedirectView("/api/envelopes/" + envelopeId);
+  }
+
+  @GetMapping
+  public ResponseEntity<List<Envelope>> getAllEnvelopes() {
+    List<Envelope> envelopes = service.getAllEnvelopes();
+    return ResponseEntity.ok(envelopes);
   }
 }
