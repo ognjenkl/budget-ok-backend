@@ -4,18 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table("envelopes")
 public class Envelope {
+    @Id
     private Long id;
     private String name;
     private double budget;
-    @Builder.Default
-    private List<EnvelopeItem> items = new ArrayList<>();
 }

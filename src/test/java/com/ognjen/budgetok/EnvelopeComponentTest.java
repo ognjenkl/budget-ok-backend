@@ -1,113 +1,137 @@
 package com.ognjen.budgetok;
 
 import com.ognjen.budgetok.application.Envelope;
-import com.ognjen.budgetok.application.EnvelopeRepository;
-import java.util.List;
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
+@Testcontainers
 class EnvelopeComponentTest {
 
-  @Autowired
-  private TestRestTemplate restTemplate;
+    private static final Logger log = LoggerFactory.getLogger(EnvelopeComponentTest.class);
 
-  @Autowired
-  private EnvelopeRepository envelopeRepository;
+    @Container
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
+            .withDatabaseName("testdb")
+            .withUsername("test")
+            .withPassword("test")
+            .withLogConsumer(new Slf4jLogConsumer(log));
 
-  @Test
-  void shouldCreateAndPersistEnvelope() {
-    // given
-    Envelope envelope = new Envelope();
-    envelope.setName("Envelope 1");
-    envelope.setBudget(100.0);
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
-    // when
-    ResponseEntity<Envelope> response = restTemplate.postForEntity(
-        "/api/envelopes", envelope, Envelope.class);
+    @Autowired
+    private TestRestTemplate restTemplate;
 
-    // then
-    assertThat(response.getStatusCode().value()).isEqualTo(201);
+    @BeforeAll
+    static void beforeAll() {
+        postgres.start();
+    }
 
-    Envelope body = response.getBody();
-    assertThat(body).isNotNull();
-    assertThat(body.getId()).isNotNull();
+    @BeforeEach
+    void setUp() {
+        var envelopes = restTemplate.getForEntity("/api/envelopes", Envelope[].class).getBody();
+        if (envelopes != null) {
+            for (var envelope : envelopes) {
+                restTemplate.delete("/api/envelopes/" + envelope.getId());
+            }
+        }
+    }
 
-    Optional<Envelope> persisted = envelopeRepository.findById(body.getId());
-    assertThat(persisted).isPresent();
-    assertThat(persisted.get().getId()).isEqualTo(body.getId());
-    assertThat(persisted.get().getName()).isEqualTo("Envelope 1");
-    assertThat(persisted.get().getBudget()).isEqualTo(100.0);
-  }
+    @Test
+    void testCreateAndGetEnvelope() {
+        var envelope = new Envelope();
+        envelope.setName("Groceries");
+        envelope.setBudget(500.0);
 
-  @Test
-  void shouldRetrieveEnvelopes() {
-    // given
-    Envelope envelope = new Envelope();
-    envelope.setName("Envelope 2");
-    envelope.setBudget(200.0);
-    envelopeRepository.save(envelope);
+        var response = restTemplate.postForEntity("/api/envelopes", envelope, Envelope.class);
 
-    // when
-    ResponseEntity<List<Envelope>> response = restTemplate.exchange(
-        "/api/envelopes",
-        org.springframework.http.HttpMethod.GET,
-        null,
-        new org.springframework.core.ParameterizedTypeReference<List<Envelope>>() {
-        });
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        var createdEnvelope = response.getBody();
+        assertThat(createdEnvelope).isNotNull();
+        assertThat(createdEnvelope.getId()).isNotNull();
+        assertThat(createdEnvelope.getName()).isEqualTo("Groceries");
+        assertThat(createdEnvelope.getBudget()).isEqualTo(500.0);
 
-    // then
-    assertThat(response.getStatusCode().value()).isEqualTo(200);
+        var getResponse = restTemplate.getForEntity("/api/envelopes/" + createdEnvelope.getId(), Envelope.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(getResponse.getBody()).isEqualTo(createdEnvelope);
+    }
 
-    List<Envelope> envelopes = response.getBody();
-    assertThat(envelopes)
-        .isNotNull()
-        .isNotEmpty()
-        .anyMatch(e -> e.getName().equals("Envelope 2") && e.getBudget() == 200.0);
-  }
+    @Test
+    void testRetrieveAllEnvelopes() {
+        var envelope1 = new Envelope();
+        envelope1.setName("Envelope 1");
+        envelope1.setBudget(100.00);
+        
+        var envelope2 = new Envelope();
+        envelope2.setName("Envelope 2");
+        envelope2.setBudget(200.00);
+        
+        restTemplate.postForEntity("/api/envelopes", envelope1, Envelope.class);
+        restTemplate.postForEntity("/api/envelopes", envelope2, Envelope.class);
 
-  @Test
-  void shouldRetrieveEnvelopeById() {
-    // given
-    Envelope envelope = new Envelope();
-    envelope.setName("Envelope 3");
-    envelope.setBudget(300.0);
-    Long savedEnvelopeId = envelopeRepository.save(envelope);
+        var response = restTemplate.getForEntity("/api/envelopes", Envelope[].class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        var envelopes = response.getBody();
+        assertThat(envelopes).hasSize(2);
+        assertThat(envelopes).extracting("name")
+                .containsExactlyInAnyOrder("Envelope 1", "Envelope 2");
+    }
 
-    // when
-    ResponseEntity<Envelope> response = restTemplate.getForEntity(
-        "/api/envelopes/" + savedEnvelopeId, Envelope.class);
+    @Test
+    void testUpdateEnvelope() {
+        var envelope = new Envelope();
+        envelope.setName("Groceries");
+        envelope.setBudget(500.0);
 
-    // then
-    assertThat(response.getStatusCode().value()).isEqualTo(200);
+        var createdEnvelope = restTemplate.postForEntity("/api/envelopes", envelope, Envelope.class).getBody();
+        assertThat(createdEnvelope).isNotNull();
 
-    Envelope body = response.getBody();
-    assertThat(body).isNotNull();
-    assertThat(body.getId()).isEqualTo(savedEnvelopeId);
-    assertThat(body.getName()).isEqualTo("Envelope 3");
-    assertThat(body.getBudget()).isEqualTo(300.0);
-  }
+        createdEnvelope.setName("Updated Groceries");
+        createdEnvelope.setBudget(600.0);
 
-  @Test
-  void shouldDeleteEnvelopeById() {
-    // given
-    Envelope envelope = new Envelope();
-    envelope.setName("Envelope 4");
-    envelope.setBudget(400.0);
-    Long savedEnvelopeId = envelopeRepository.save(envelope);
+        restTemplate.put("/api/envelopes/" + createdEnvelope.getId(), createdEnvelope);
 
-    // when
-    restTemplate.delete("/api/envelopes/" + savedEnvelopeId);
+        var updatedEnvelope = restTemplate.getForEntity("/api/envelopes/" + createdEnvelope.getId(), Envelope.class).getBody();
+        assertThat(updatedEnvelope).isNotNull();
+        assertThat(updatedEnvelope.getName()).isEqualTo("Updated Groceries");
+        assertThat(updatedEnvelope.getBudget()).isEqualTo(600.0);
+    }
 
-    // then
-    Optional<Envelope> persisted = envelopeRepository.findById(savedEnvelopeId);
-    assertThat(persisted).isEmpty();
-  }
+    @Test
+    void testDeleteEnvelope() {
+        var envelope = new Envelope();
+        envelope.setName("Groceries");
+        envelope.setBudget(500.0);
+
+        var createdEnvelope = restTemplate.postForEntity("/api/envelopes", envelope, Envelope.class).getBody();
+        assertThat(createdEnvelope).isNotNull();
+
+        restTemplate.delete("/api/envelopes/" + createdEnvelope.getId());
+
+        var response = restTemplate.getForEntity("/api/envelopes/" + createdEnvelope.getId(), String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 }

@@ -20,20 +20,20 @@ public class EnvelopeTest {
 
   @Test
   void shouldCreateEnvelope() {
-    var envelopes = service.getAllEnvelopes();
+    var envelopes = service.getAll();
     assertThat(envelopes).isEmpty();
 
     Envelope envelope = new Envelope();
     envelope.setName("Envelope 1");
     envelope.setBudget(100.0);
 
-    Envelope createdEnvelope = service.createEnvelope(envelope);
+    Envelope createdEnvelope = service.create(envelope);
 
     assertThat(createdEnvelope.getId()).isNotNull();
     assertThat(createdEnvelope.getName()).isEqualTo("Envelope 1");
     assertThat(createdEnvelope.getBudget()).isEqualTo(100.0);
 
-    envelopes = service.getAllEnvelopes();
+    envelopes = service.getAll();
     assertThat(envelopes).hasSize(1);
   }
 

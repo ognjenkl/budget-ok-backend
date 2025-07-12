@@ -1,46 +1,56 @@
 package com.ognjen.budgetok.application;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class InMemoryEnvelopeRepository implements EnvelopeRepository {
 
-  Map<Long, Envelope> envelopes = new HashMap<>();
+    private final List<Envelope> envelopes = new ArrayList<>();
+    private long nextId = 1;
 
-  @Override
-  public long save(Envelope envelope) {
-    if (envelope.getId() == null) {
-      // New envelope - assign ID
-      long newId = envelopes.keySet().stream().mapToLong(Long::longValue).max().orElse(0) + 1;
-      envelope.setId(newId);
+    @Override
+    public Envelope save(Envelope envelope) {
+        if (envelope.getId() == null) {
+            envelope.setId(nextId++);
+            envelopes.add(envelope);
+        } else {
+            deleteById(envelope.getId());
+            envelopes.add(envelope);
+        }
+        return envelope;
     }
-    envelopes.put(envelope.getId(), envelope);
-    System.out.println("Envelope saved: " + envelope.getName() + " with budget " + envelope.getBudget() + " and id " + envelope.getId());
-
-    return envelope.getId();
-  }
-
-  @Override
-  public List<Envelope> findAll() {
-    return envelopes.values().stream().toList();
-  }
-
-  @Override
-  public Optional<Envelope> findById(Long id) {
-    return Optional.ofNullable(envelopes.get(id));
-  }
-
-  @Override
-  public void delete(Long id) {
-    Envelope envelope = envelopes.remove(id);
-    if (envelope != null) {
-      System.out.println("Envelope deleted: " + envelope.getName() + " with id " + envelope.getId());
-    } else {
-      System.out.println("No envelope found with id: " + id);
+    
+    @Override
+    public Envelope update(long id, Envelope envelope) {
+        findById(id); // Will throw if not found
+        envelope.setId(id);
+        deleteById(id);
+        envelopes.add(envelope);
+        return envelope;
     }
-  }
+
+    @Override
+    public Envelope findById(long id) {
+        return envelopes.stream()
+                .filter(e -> e.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new EnvelopeNotFoundException(id));
+    }
+
+    @Override
+    public List<Envelope> findAll() {
+        return new ArrayList<>(envelopes);
+    }
+
+    @Override
+    public void deleteById(long id) {
+        boolean removed = envelopes.removeIf(e -> e.getId().equals(id));
+        if (!removed) {
+            throw new EnvelopeNotFoundException(id);
+        }
+    }
+
 }

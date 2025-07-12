@@ -1,92 +1,51 @@
 package com.ognjen.budgetok.presentation;
 
 import com.ognjen.budgetok.application.Envelope;
-import com.ognjen.budgetok.application.EnvelopeItem;
 import com.ognjen.budgetok.application.EnvelopeService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-
-@Controller
+@RestController
 @RequestMapping("/api/envelopes")
 @RequiredArgsConstructor
 public class EnvelopeController {
 
-  private final EnvelopeService service;
+    private final EnvelopeService envelopeService;
 
-//  @PostMapping
-//  public RedirectView createEnvelope() {
-//    Envelope envelope = Envelope.builder()
-//        .name("New Envelope")
-//        .budget(100.0)
-//        .build();
-//
-//    Envelope createdEnvelope = service.createEnvelope(envelope);
-//    System.out.println("Envelope created successfully with id: " + createdEnvelope.getId());
-//
-//    return new RedirectView("/home");
-//  }
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Envelope createEnvelope(@RequestBody Envelope envelope) {
+        return envelopeService.create(envelope);
+    }
 
-  @PostMapping
-  public ResponseEntity<Envelope> createEnvelope(@RequestBody Envelope envelope) {
-    Envelope createdEnvelope = service.createEnvelope(envelope);
-    return ResponseEntity
-        .status(201)
-        .body(createdEnvelope);
-  }
+    @GetMapping
+    public List<Envelope> getAllEnvelopes() {
+        return envelopeService.getAll();
+    }
 
-//  @GetMapping("/{id}")
-//  public String viewEnvelope(@PathVariable Long id, Model model) {
-//    Envelope envelope = service.getEnvelopeById(id);
-//    if (envelope.getItems() == null) {
-//      envelope.setItems(new ArrayList<>());
-//    }
-//    model.addAttribute("envelope", envelope);
-//    return "envelope";
-//  }
+    @GetMapping("/{id}")
+    public Envelope getEnvelopeById(@PathVariable long id) {
+        return envelopeService.getById(id);
+    }
 
-  @GetMapping("/{envelopeId}/items/new")
-  public String showAddItemForm(@PathVariable Long envelopeId, Model model) {
+    @PutMapping("/{id}")
+    public Envelope updateEnvelope(@PathVariable long id, @RequestBody Envelope envelope) {
+        return envelopeService.update(id, envelope);
+    }
 
-    model.addAttribute("envelopeId", envelopeId);
-    model.addAttribute("item", EnvelopeItem.builder()
-        .date(LocalDate.now())
-        .build());
-
-    return "add-item";
-  }
-
-  @PostMapping("/{envelopeId}/items")
-  public RedirectView addItem(@PathVariable Long envelopeId,
-      @ModelAttribute("item") EnvelopeItem item) {
-
-    service.addItemToEnvelope(envelopeId, item);
-
-    return new RedirectView("/api/envelopes/" + envelopeId);
-  }
-
-  @GetMapping
-  public ResponseEntity<List<Envelope>> getAllEnvelopes() {
-    List<Envelope> envelopes = service.getAllEnvelopes();
-    return ResponseEntity.ok(envelopes);
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<Envelope> getEnvelopeById(@PathVariable Long id) {
-    Envelope envelope = service.getEnvelopeById(id);
-    return ResponseEntity.ok(envelope);
-  }
-
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteEnvelope(@PathVariable Long id) {
-    service.deleteEnvelope(id);
-    return ResponseEntity.noContent().build();
-  }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEnvelope(@PathVariable long id) {
+        envelopeService.delete(id);
+    }
 }

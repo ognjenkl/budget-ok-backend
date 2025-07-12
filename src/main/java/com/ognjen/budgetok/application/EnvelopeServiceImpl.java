@@ -1,51 +1,46 @@
 package com.ognjen.budgetok.application;
 
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class EnvelopeServiceImpl implements EnvelopeService {
 
-  private final EnvelopeRepository repository;
+  private final EnvelopeRepository envelopeRepository;
 
   @Override
-  public Envelope createEnvelope(Envelope envelope) {
-    repository.save(envelope);
-    return envelope;
+  @Transactional
+  public Envelope create(Envelope envelope) {
+    return envelopeRepository.save(envelope);
   }
 
   @Override
-  public List<Envelope> getAllEnvelopes() {
-    return repository.findAll();
+  public List<Envelope> getAll() {
+    return envelopeRepository.findAll();
   }
 
   @Override
-  public Envelope getEnvelopeById(Long id) {
-    return repository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Envelope not found with id: " + id));
+  @Transactional(readOnly = true)
+  public Envelope getById(long id) {
+    return envelopeRepository.findById(id);
   }
 
   @Override
-  public void addItemToEnvelope(Long envelopeId, EnvelopeItem item) {
-    Envelope envelope = getEnvelopeById(envelopeId);
-    if (envelope.getItems() == null) {
-      envelope.setItems(new ArrayList<>());
+  @Transactional
+  public void delete(long id) {
+    envelopeRepository.deleteById(id);
+  }
+
+  @Override
+  @Transactional
+  public Envelope update(long id, Envelope envelope) {
+    if (envelope.getId() != null && envelope.getId() != id) {
+      throw new IllegalArgumentException("ID in path does not match ID in request body");
     }
-    envelope.getItems().add(item);
-    repository.save(envelope);
-  }
-
-  @Override
-  public void deleteEnvelope(Long id) {
-    Envelope envelope = getEnvelopeById(id);
-    if (envelope != null) {
-      repository.delete(id);
-      System.out.println("Envelope deleted: " + envelope.getName() + " with id " + envelope.getId());
-    } else {
-      throw new RuntimeException("Envelope not found with id: " + id);
-    }
+    return envelopeRepository.update(id, envelope);
   }
 }
