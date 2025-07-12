@@ -37,4 +37,15 @@ public class EnvelopeServiceImpl implements EnvelopeService {
     envelope.getItems().add(item);
     repository.save(envelope);
   }
+
+  @Override
+  public void deleteEnvelope(Long id) {
+    Envelope envelope = getEnvelopeById(id);
+    if (envelope != null) {
+      repository.delete(id);
+      System.out.println("Envelope deleted: " + envelope.getName() + " with id " + envelope.getId());
+    } else {
+      throw new RuntimeException("Envelope not found with id: " + id);
+    }
+  }
 }

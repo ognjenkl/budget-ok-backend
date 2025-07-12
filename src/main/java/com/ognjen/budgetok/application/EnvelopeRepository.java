@@ -5,9 +5,11 @@ import java.util.Optional;
 
 public interface EnvelopeRepository {
 
-  void save(Envelope envelope);
+  long save(Envelope envelope);
 
   List<Envelope> findAll();
 
   Optional<Envelope> findById(Long id);
+
+  void delete(Long id);
 }

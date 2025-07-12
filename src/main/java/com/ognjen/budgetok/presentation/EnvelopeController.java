@@ -42,15 +42,15 @@ public class EnvelopeController {
         .body(createdEnvelope);
   }
 
-  @GetMapping("/{id}")
-  public String viewEnvelope(@PathVariable Long id, Model model) {
-    Envelope envelope = service.getEnvelopeById(id);
-    if (envelope.getItems() == null) {
-      envelope.setItems(new ArrayList<>());
-    }
-    model.addAttribute("envelope", envelope);
-    return "envelope";
-  }
+//  @GetMapping("/{id}")
+//  public String viewEnvelope(@PathVariable Long id, Model model) {
+//    Envelope envelope = service.getEnvelopeById(id);
+//    if (envelope.getItems() == null) {
+//      envelope.setItems(new ArrayList<>());
+//    }
+//    model.addAttribute("envelope", envelope);
+//    return "envelope";
+//  }
 
   @GetMapping("/{envelopeId}/items/new")
   public String showAddItemForm(@PathVariable Long envelopeId, Model model) {
@@ -76,5 +76,17 @@ public class EnvelopeController {
   public ResponseEntity<List<Envelope>> getAllEnvelopes() {
     List<Envelope> envelopes = service.getAllEnvelopes();
     return ResponseEntity.ok(envelopes);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<Envelope> getEnvelopeById(@PathVariable Long id) {
+    Envelope envelope = service.getEnvelopeById(id);
+    return ResponseEntity.ok(envelope);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteEnvelope(@PathVariable Long id) {
+    service.deleteEnvelope(id);
+    return ResponseEntity.noContent().build();
   }
 }

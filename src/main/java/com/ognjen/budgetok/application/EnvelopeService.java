@@ -11,4 +11,6 @@ public interface EnvelopeService {
   Envelope getEnvelopeById(Long id);
   
   void addItemToEnvelope(Long envelopeId, EnvelopeItem item);
+
+  void deleteEnvelope(Long id);
 }
