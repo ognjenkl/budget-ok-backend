@@ -67,9 +67,10 @@ class EnvelopeComponentTest {
     assertThat(response.getStatusCode().value()).isEqualTo(200);
 
     List<Envelope> envelopes = response.getBody();
-    assertThat(envelopes).isNotNull();
-    assertThat(envelopes).isNotEmpty();
-    assertThat(envelopes).anyMatch(e -> e.getName().equals("Envelope 2") && e.getBudget() == 200.0);
+    assertThat(envelopes)
+        .isNotNull()
+        .isNotEmpty()
+        .anyMatch(e -> e.getName().equals("Envelope 2") && e.getBudget() == 200.0);
   }
 
   @Test
@@ -95,7 +96,7 @@ class EnvelopeComponentTest {
   }
 
   @Test
-  void shoulDeleteEnvelopeById() {
+  void shouldDeleteEnvelopeById() {
     // given
     Envelope envelope = new Envelope();
     envelope.setName("Envelope 4");

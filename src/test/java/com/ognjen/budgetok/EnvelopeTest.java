@@ -3,7 +3,7 @@ package com.ognjen.budgetok;
 import com.ognjen.budgetok.application.Envelope;
 import com.ognjen.budgetok.application.EnvelopeService;
 import com.ognjen.budgetok.application.EnvelopeServiceImpl;
-import com.ognjen.budgetok.application.MapEnvelopeRepository;
+import com.ognjen.budgetok.application.InMemoryEnvelopeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ public class EnvelopeTest {
 
   @BeforeEach
   void setUp() {
-    service = new EnvelopeServiceImpl(new MapEnvelopeRepository());
+    service = new EnvelopeServiceImpl(new InMemoryEnvelopeRepository());
   }
 
   @Test
