@@ -12,18 +12,18 @@ public class TestcontainersConfiguration {
 
     @Bean
     @ServiceConnection
-    public KafkaContainer kafkaContainer() {
-        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"))
-                .withReuse(false);
-    }
-
-    @Bean
-    @ServiceConnection
     public PostgreSQLContainer<?> postgresContainer() {
         return new PostgreSQLContainer<>(DockerImageName.parse("postgres:15-alpine"))
                 .withDatabaseName("testdb")
                 .withUsername("test")
                 .withPassword("test")
+                .withReuse(false);
+    }
+
+    @Bean
+    @ServiceConnection
+    public KafkaContainer kafkaContainer() {
+        return new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.4.0"))
                 .withReuse(false);
     }
 }
