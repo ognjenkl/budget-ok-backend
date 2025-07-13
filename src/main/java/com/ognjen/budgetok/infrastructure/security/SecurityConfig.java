@@ -33,6 +33,11 @@ public class SecurityConfig {
                 "/webjars/**",
                 "api/envelopes/**"
             ).permitAll()
+            // Actuator endpoints (read-only access)
+            .requestMatchers("/actuator/health/**").permitAll()
+            .requestMatchers("/actuator/info").permitAll()
+            .requestMatchers("/actuator/env").permitAll()
+            .requestMatchers("/actuator").permitAll()
             // API security
             .requestMatchers("/api/test/admin/**").hasRole("ADMIN")
             .requestMatchers("/api/test/**").authenticated()
@@ -41,14 +46,13 @@ public class SecurityConfig {
             .requestMatchers("/home").authenticated()
             // Envelope API endpoints
             .requestMatchers("/api/envelopes/**").authenticated()
+            .requestMatchers("/actuator/**").hasRole("ADMIN") // Secure other actuator endpoints
             .anyRequest().authenticated()
         )
-        .formLogin(form -> {
-              form
-                  .loginPage(loginPath)
-                  .defaultSuccessUrl(homePath, true)
-                  .permitAll();
-            }
+        .formLogin(form -> form
+            .loginPage(loginPath)
+            .defaultSuccessUrl(homePath, true)
+            .permitAll()
         )
         .logout(logout -> logout
             .permitAll()
