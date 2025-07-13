@@ -25,15 +25,13 @@ class EnvelopeComponentTest {
     @BeforeEach
     void setUp() {
         var envelopes = restTemplate.getForEntity("/api/envelopes", Envelope[].class).getBody();
-        if (envelopes != null) {
-            for (var envelope : envelopes) {
-                restTemplate.delete("/api/envelopes/" + envelope.getId());
-            }
-        }
+      for (var envelope : envelopes) {
+        restTemplate.delete("/api/envelopes/" + envelope.getId());
+      }
     }
 
     @Test
-    void testCreateAndGetEnvelope() {
+    void shouldCreateEnvelope() {
         var envelope = new Envelope();
         envelope.setName("Groceries");
         envelope.setBudget(500.0);
@@ -53,7 +51,7 @@ class EnvelopeComponentTest {
     }
 
     @Test
-    void testRetrieveAllEnvelopes() {
+    void shouldRetrieveAllEnvelopes() {
         var envelope1 = new Envelope();
         envelope1.setName("Envelope 1");
         envelope1.setBudget(100.00);
@@ -74,7 +72,7 @@ class EnvelopeComponentTest {
     }
 
     @Test
-    void testUpdateEnvelope() {
+    void shouldUpdateEnvelope() {
         var envelope = new Envelope();
         envelope.setName("Groceries");
         envelope.setBudget(500.0);
@@ -94,7 +92,7 @@ class EnvelopeComponentTest {
     }
 
     @Test
-    void testDeleteEnvelope() {
+    void shouldDeleteEnvelope() {
         var envelope = new Envelope();
         envelope.setName("Groceries");
         envelope.setBudget(500.0);
