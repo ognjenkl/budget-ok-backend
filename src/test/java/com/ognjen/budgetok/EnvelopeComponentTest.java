@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -104,5 +105,21 @@ class EnvelopeComponentTest {
 
         var response = restTemplate.getForEntity("/api/envelopes/" + createdEnvelope.getId(), String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void shouldRenameEnvelope() {
+        var envelope = new Envelope();
+        envelope.setName("Old Name");
+        envelope.setBudget(300.0);
+
+        var createdEnvelope = restTemplate.postForEntity("/api/envelopes", envelope, Envelope.class).getBody();
+        assertThat(createdEnvelope).isNotNull();
+
+        createdEnvelope.setName("New Name");
+        restTemplate.exchange("/api/envelopes/" + createdEnvelope.getId(),
+                HttpMethod.PATCH,
+                new org.springframework.http.HttpEntity<>(createdEnvelope),
+                Envelope.class);
     }
 }
