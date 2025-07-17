@@ -96,5 +96,26 @@ public class EnvelopeAcceptanceIT {
         // Add assertions for successful form submission
         // This will depend on how your application handles the form submission
         // For example, you might check for a success message or redirect
+
+        Response response = page.waitForResponse(
+            resp -> resp.url().endsWith("/api/envelopes") &&
+                resp.request().method().equals("POST"),
+            () -> page.click("button:has-text('Save Envelope')")
+        );
+
+        // Verify response status is 201 Created
+        assertEquals(201, response.status(), "API should return 201 Created status");
+        
+        // Get response text and verify it contains required fields
+        String responseText = response.text();
+        assertTrue(responseText.contains("\"id\""), "Response should contain id field");
+        assertTrue(responseText.contains("\"name\""), "Response should contain name field");
+        assertTrue(responseText.contains("\"budget\""), "Response should contain budget field");
+        
+        // Verify the values
+        assertTrue(responseText.contains("\"name\":\"Test Envelope\""), 
+                 "Response should contain the submitted name");
+        assertTrue(responseText.contains("\"budget\":100.5"), 
+                 "Response should contain the submitted budget");
     }
 }
