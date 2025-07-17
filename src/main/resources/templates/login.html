@@ -3,15 +3,67 @@
 <head>
     <title>Login</title>
     <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: green;
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
-    <div class="login-container">
+    <!-- Login Form -->
+    <div class="form-container">
         <h2>Login</h2>
         <form th:action="@{/login}" method="post">
             <div th:if="${param.error}" class="error">
                 Invalid username or password.
             </div>
-            <div th:if="${param.logout}" class="logout">
+            <div th:if="${param.logout}" class="success">
                 You have been logged out.
             </div>
             <div class="form-group">
@@ -24,6 +76,32 @@
             </div>
             <div class="form-group">
                 <button type="submit">Login</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Envelope Form -->
+    <div class="form-container">
+        <h2>Create New Envelope</h2>
+        <div th:if="${envelopeSaved}" class="success">
+            Envelope saved successfully!
+        </div>
+        <div th:if="${envelopeError}" class="error" th:text="${envelopeError}">
+        </div>
+        <form th:action="@{/envelopes}" method="post" th:object="${envelope}">
+            <div class="form-group">
+                <label for="name">name:</label>
+                <input type="text" id="name" name="name" required 
+                       placeholder="e.g., Groceries, Rent, etc."/>
+            </div>
+            <div class="form-group">
+                <label for="budget">budget:</label>
+                <input type="number" id="budget" name="budget" 
+                       step="0.01" min="0" required 
+                       placeholder="0.00"/>
+            </div>
+            <div class="form-group">
+                <button type="submit">Save Envelope</button>
             </div>
         </form>
     </div>

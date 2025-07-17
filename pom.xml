@@ -132,6 +132,20 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
+    
+    <!-- Playwright for end-to-end testing -->
+    <dependency>
+      <groupId>com.microsoft.playwright</groupId>
+      <artifactId>playwright</artifactId>
+      <version>1.41.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.microsoft.playwright</groupId>
+      <artifactId>driver-bundle</artifactId>
+      <version>1.41.2</version>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 

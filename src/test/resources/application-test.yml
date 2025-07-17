@@ -2,8 +2,8 @@
 spring:
   datasource:
     # Testcontainers will set the URL
-    username: test
-    password: test
+    username: budgetok
+    password: budgetok
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 10
