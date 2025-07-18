@@ -86,27 +86,36 @@ public class EnvelopeAcceptanceIT {
         // Navigate to the login page
         page.navigate(baseUrl + "/login");
 
+        // Locate form elements
+        var nameInput = page.locator("input[name='name']");
+        var budgetInput = page.locator("input[name='budget']");
+        var submitButton = page.locator("button:has-text('Save Envelope')");
+
         // Fill in the form
-        page.fill("input[name='name']", "Test Envelope");
-        page.fill("input[name='budget']", "100.50");
+        nameInput.fill("Test Envelope");
+        budgetInput.fill("100.50");
 
-        // Submit the form and wait for the response
+        // Set up response waiting before clicking the button
         Response response = page.waitForResponse(
-            resp -> resp.url().endsWith("/api/envelopes") && resp.request().method().equals("POST"),
-            () -> page.click("button:has-text('Save Envelope')"));
+            response1 -> response1.url().endsWith("/api/envelopes") &&
+                   response1.request().method().equals("POST"),
+            submitButton::click
+        );
 
+        // Verify response status
         assertEquals(201, response.status(), "API should return 201 Created status");
 
-        // Get response text and verify it contains required fields
+        // Parse and verify response
         String responseText = response.text();
         assertTrue(responseText.contains("\"id\""), "Response should contain id field");
         assertTrue(responseText.contains("\"name\""), "Response should contain name field");
         assertTrue(responseText.contains("\"budget\""), "Response should contain budget field");
 
         // Verify the values
-        assertTrue(responseText.contains("\"name\":\"Test Envelope\""), 
+        assertTrue(responseText.contains("\"name\":\"Test Envelope\""),
                  "Response should contain the submitted name");
-        assertTrue(responseText.contains("\"budget\":100.5"), 
+        assertTrue(responseText.contains("\"budget\":100.5"),
                  "Response should contain the submitted budget");
     }
+
 }
