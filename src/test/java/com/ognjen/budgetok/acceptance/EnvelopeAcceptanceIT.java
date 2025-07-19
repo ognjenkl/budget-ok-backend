@@ -51,36 +51,15 @@ public class EnvelopeAcceptanceIT {
 
     navigator.navigateTo(baseUrl + "/login");
 
-    navigator.instantiateInputFields();
-
     Envelope envelope = Envelope.builder()
         .name("Test Envelope")
         .budget(100.50)
         .build();
 
     Response response = navigator.sendRequestToCreateEnvelope(envelope);
-//    Response response = sendRequestToCreateEnvelope(envelope, nameInput, budgetInput, submitButton);
 
     verifyEnvelopeCreated(envelope, response);
   }
-
-//  private Response getResponse(String path, String method, Runnable callback) {
-//
-//    // Set up response waiting before clicking the button
-//    return page.waitForResponse(
-//        response -> isPreconditionStisfied(path, method, response),
-//        callback
-//    );
-//  }
-
-//  private boolean isPreconditionStisfied(String path, String method, Response response) {
-//    return response.url().endsWith(path) && response.request().method().equals(method);
-//  }
-
-//  private void navigateTo(String url) {
-////     Navigate to the login page
-//    page.navigate(url);
-//  }
 
   @Test
   void shouldCreateMultipleEnvelopes() {
@@ -91,19 +70,9 @@ public class EnvelopeAcceptanceIT {
     // Navigate to the login page
     navigator.navigateTo(baseUrl + "/login");
 
-//    // Locate form elements
-//    // Locate form element
-//    Locator nameInput = page.locator("input[name='name']");
-//    // Locate form element
-//    Locator budgetInput = page.locator("input[name='budget']");
-//    // Locate form element
-//    Locator submitButton = page.locator("button:has-text('Save Envelope')");
-
     // Create each envelope
     for (Envelope envelope : testEnvelopes) {
 
-//      Response response = sendRequestToCreateEnvelope(envelope, nameInput, budgetInput,
-//          submitButton);
       Response response = navigator.sendRequestToCreateEnvelope(envelope);
 
       verifyEnvelopeCreated(envelope, response);
@@ -167,19 +136,6 @@ public class EnvelopeAcceptanceIT {
     assertTrue(responseText.contains(String.format("\"budget\":%s", envelope.getBudget())),
         String.format("Response should contain the submitted budget: %s", envelope.getBudget()));
   }
-
-
-//  private Response sendRequestToCreateEnvelope(Envelope envelope, Locator nameInput,
-//      Locator budgetInput,
-//      Locator submitButton) {
-//
-//    // Fill in the form
-//    nameInput.fill(envelope.getName());
-//    budgetInput.fill(envelope.getBudget() + "");
-//
-//    // Submit the form and wait for response
-//    return getResponse("/api/envelopes", "POST", submitButton::click);
-//  }
 
   private void verifyStatus(int expectedStatus, String verificationMessage, Response response) {
     assertEquals(expectedStatus, response.status(), verificationMessage);

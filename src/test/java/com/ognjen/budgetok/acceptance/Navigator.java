@@ -49,10 +49,6 @@ public class Navigator {
     return page.locator(input);
   }
 
-  public void instantiateInputFields() {
-
-  }
-
   public Response sendRequestToCreateEnvelope(Envelope envelope) {
     // Locate form element
     Locator nameInput = page.locator("input[name='name']");
