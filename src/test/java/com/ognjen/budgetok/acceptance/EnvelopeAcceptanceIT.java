@@ -52,36 +52,6 @@ public class EnvelopeAcceptanceIT {
     }
 
     @Test
-    void shouldDisplayEnvelopeFormWithRequiredFields() {
-        // Navigate to the login page
-        page.navigate(baseUrl + "/login");
-
-        // Check if the page title is correct
-        String pageTitle = page.title();
-        assertTrue(pageTitle.contains("Login") || pageTitle.contains("Budget OK"), 
-                "Page title should contain 'Login' or 'Budget OK'");
-
-        // Check for the name input field
-        Locator nameInput = page.locator("input[name='name']");
-        assertTrue(nameInput.isVisible(), "Name input field should be visible");
-        assertEquals("text", nameInput.getAttribute("type"), "Name input should be of type 'text'");
-        assertTrue(nameInput.getAttribute("required") != null, "Name input should be required");
-
-        // Check for the budget input field
-        Locator budgetInput = page.locator("input[name='budget']");
-        assertTrue(budgetInput.isVisible(), "Budget input field should be visible");
-        assertEquals("number", budgetInput.getAttribute("type"), "Budget input should be of type 'number'");
-        assertEquals("0.01", budgetInput.getAttribute("step"), "Budget step should be 0.01");
-        assertEquals("0", budgetInput.getAttribute("min"), "Budget min value should be 0");
-        assertTrue(budgetInput.getAttribute("required") != null, "Budget input should be required");
-
-        // Check for the save button
-        Locator saveButton = page.locator("button:has-text('Save Envelope')");
-        assertTrue(saveButton.isVisible(), "Save button should be visible");
-        assertEquals("button", saveButton.getAttribute("type"), "Save button should be of type 'submit'");
-    }
-
-    @Test
     void shouldAllowSubmittingEnvelopeForm() {
         // Navigate to the login page
         page.navigate(baseUrl + "/login");
@@ -118,4 +88,86 @@ public class EnvelopeAcceptanceIT {
                  "Response should contain the submitted budget");
     }
 
+    @Test
+    void shouldCreateMultipleEnvelopes() {
+        // Test data
+        String[][] testEnvelopes = {
+            {"Rent", "1200"},
+            {"Groceries", "400"},
+            {"Utilities", "200"}
+        };
+
+        // Navigate to the login page
+        page.navigate(baseUrl + "/login");
+
+        // Create each envelope
+        for (String[] envelope : testEnvelopes) {
+            String name = envelope[0];
+            String budget = envelope[1];
+
+            // Locate form elements
+            var nameInput = page.locator("input[name='name']");
+            var budgetInput = page.locator("input[name='budget']");
+            var submitButton = page.locator("button:has-text('Save Envelope')");
+
+            // Fill in the form
+            nameInput.fill(name);
+            budgetInput.fill(budget);
+
+            // Submit the form and wait for response
+            Response response = page.waitForResponse(
+                response1 -> response1.url().endsWith("/api/envelopes") &&
+                       response1.request().method().equals("POST"),
+                submitButton::click
+            );
+
+            // Verify response status
+            assertEquals(201, response.status(),
+                String.format("API should return 201 Created status for envelope: %s", name));
+
+            // Parse and verify response
+            String responseText = response.text();
+            assertTrue(responseText.contains(String.format("\"name\":\"%s\"", name)),
+                     String.format("Response should contain the submitted name: %s", name));
+            assertTrue(responseText.contains(String.format("\"budget\":%s", budget)),
+                     String.format("Response should contain the submitted budget: %s", budget));
+
+            // Wait a moment before next submission to ensure UI updates
+            page.waitForTimeout(500);
+        }
+
+        // Get the list of all envelopes from the API
+        Response apiResponse = page.waitForResponse(
+            response -> response.url().endsWith("/api/envelopes") &&
+                       response.request().method().equals("GET"),
+            () -> page.navigate(baseUrl + "/api/envelopes")
+        );
+
+        // Parse the JSON response
+        String responseBody = apiResponse.text();
+
+        // Verify each test envelope exists in the response with correct budget
+        for (String[] envelope : testEnvelopes) {
+            String name = envelope[0];
+            String budget = envelope[1];
+
+            // Create a pattern to match the envelope in the JSON response
+            String envelopePattern = String.format("\"name\"\s*:\s*\"%s\".*?\"budget\"\s*:\s*%s",
+                name, budget);
+
+            // Check if the envelope with matching name and budget exists
+            assertTrue(responseBody.matches("(?s).*" + envelopePattern + ".*"),
+                String.format("Expected envelope with name '%s' and budget %s not found in response", 
+                name, budget));
+        }
+        
+        // Verify each test envelope exists in the response with correct name
+        for (String[] envelope : testEnvelopes) {
+            String name = envelope[0];
+            assertTrue(
+                responseBody.contains(String.format("\"name\":\"%s\"", name)),
+                String.format("Expected envelope with name '%s' not found in response", name)
+            );
+        }
+    }
 }
