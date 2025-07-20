@@ -7,7 +7,6 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.Response;
-import com.ognjen.budgetok.application.Envelope;
 
 public class Navigator {
 
@@ -61,9 +60,8 @@ public class Navigator {
 
   }
 
-  public Response getResponse(String path, String method, Runnable callback) {
+  private Response getResponse(String path, String method, Runnable callback) {
 
-    // Set up response waiting before clicking the button
     return page.waitForResponse(
         response -> isPreconditionStisfied(path, method, response),
         callback
