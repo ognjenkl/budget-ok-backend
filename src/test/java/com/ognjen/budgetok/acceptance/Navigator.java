@@ -7,6 +7,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.Response;
+import com.microsoft.playwright.options.AriaRole;
 
 public class Navigator {
 
@@ -43,13 +44,12 @@ public class Navigator {
     page.navigate(url);
   }
 
-  public Response sendRequestToCreateEnvelope(String[] envelope, String path, String method) {
-    // Locate form element
-    Locator nameInput = page.locator("input[name='name']");
-    // Locate form element
-    Locator budgetInput = page.locator("input[name='budget']");
-    // Locate form element
-    Locator submitButton = page.locator("button:has-text('Save Envelope')");
+  public Response submitRequestToCreateEnvelope(String[] envelope, String path, String method) {
+
+    Locator nameInput = page.getByPlaceholder("Name");
+    Locator budgetInput = page.getByPlaceholder("Budget");
+    Locator submitButton = page.getByRole(AriaRole.BUTTON,
+        new Page.GetByRoleOptions().setName("Submit"));
 
     // Fill in the form
     nameInput.fill(envelope[0]);
@@ -78,6 +78,6 @@ public class Navigator {
   }
 
   public Response sendRequestToGetEnvelopes(String baseUrl, String path, String method) {
-      return getResponse(path, method, () -> navigateTo(baseUrl + path));
+    return getResponse(path, method, () -> navigateTo(baseUrl + path));
   }
 }

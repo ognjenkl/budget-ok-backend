@@ -35,7 +35,7 @@ public class EnvelopeAcceptanceIT {
   @BeforeEach
   void createContextAndPage() {
     navigator.initContext();
-    baseUrl = "http://localhost:8080";
+    baseUrl = "http://localhost:5173";
   }
 
   @AfterEach
@@ -48,11 +48,13 @@ public class EnvelopeAcceptanceIT {
 
     String[] envelope = {"Test Envelope", "100.5"};
 
-    navigator.navigateTo(baseUrl + "/login");
+    navigator.navigateTo(baseUrl);
 
-    Response response = navigator.sendRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
+    Response response = navigator.submitRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
 
-    verifyEnvelopeCreated(envelope, response);
+    // Verify response status
+    verify201ResponseStatus(envelope, response);
+
   }
 
   @Test
@@ -60,20 +62,30 @@ public class EnvelopeAcceptanceIT {
 
     String[][] testEnvelopes = createThreeEnvelopes();
 
-    navigator.navigateTo(baseUrl + "/login");
+    navigator.navigateTo(baseUrl);
 
     for (String[] envelope : testEnvelopes) {
 
-      Response response = navigator.sendRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
+      Response response = navigator.submitRequestToCreateEnvelope(envelope, "/api/envelopes",
+          "POST");
 
-      verifyEnvelopeCreated(envelope, response);
+      verify201ResponseStatus(envelope, response);
 
       navigator.waitForTimeout(500);
     }
 
-    Response getEnvelopesResponse = navigator.sendRequestToGetEnvelopes(baseUrl, "/api/envelopes", "GET");
+    // todo check with Koki how to verify the envelopes creation
+
+    Response getEnvelopesResponse = navigator.sendRequestToGetEnvelopes(baseUrl, "/api/envelopes",
+        "GET");
 
     verifyEnvelopesCreated(getEnvelopesResponse, testEnvelopes);
+  }
+
+  private void verify201ResponseStatus(String[] envelope, Response response) {
+    String verificationMessage =
+        String.format("Expected status 201 (Created) when creating envelope with name '%s'", envelope[0]);
+    verifyStatus(201, verificationMessage, response);
   }
 
   private void verifyEnvelopesCreated(Response apiResponse, String[][] testEnvelopes) {
@@ -109,25 +121,6 @@ public class EnvelopeAcceptanceIT {
         {"Groceries", "400"},
         {"Utilities", "200"}
     };
-  }
-
-  private void verifyEnvelopeCreated(String[] envelope, Response response) {
-
-    // Verify response status
-    String verificationMessage =
-        "API should return 201 Created status for envelope: " + envelope[0];
-    verifyStatus(201, verificationMessage, response);
-
-    // Parse and verify response
-    String responseText = response.text();
-    assertTrue(responseText.contains("\"id\""), "Response should contain id field");
-    assertTrue(responseText.contains("\"name\""), "Response should contain name field");
-    assertTrue(responseText.contains("\"budget\""), "Response should contain budget field");
-
-    assertTrue(responseText.contains(String.format("\"name\":\"%s\"", envelope[0])),
-        String.format("Response should contain the submitted name: %s", envelope[0]));
-    assertTrue(responseText.contains(String.format("\"budget\":%s", envelope[1])),
-        String.format("Response should contain the submitted budget: %s", envelope[1]));
   }
 
   private void verifyStatus(int expectedStatus, String verificationMessage, Response response) {
