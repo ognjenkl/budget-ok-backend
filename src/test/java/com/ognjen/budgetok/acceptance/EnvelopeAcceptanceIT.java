@@ -1,6 +1,5 @@
 package com.ognjen.budgetok.acceptance;
 
-import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Response;
 import com.ognjen.budgetok.application.Envelope;
 import java.util.List;
@@ -56,7 +55,7 @@ public class EnvelopeAcceptanceIT {
         .budget(100.50)
         .build();
 
-    Response response = navigator.sendRequestToCreateEnvelope(envelope);
+    Response response = navigator.sendRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
 
     verifyEnvelopeCreated(envelope, response);
   }
@@ -73,7 +72,7 @@ public class EnvelopeAcceptanceIT {
     // Create each envelope
     for (Envelope envelope : testEnvelopes) {
 
-      Response response = navigator.sendRequestToCreateEnvelope(envelope);
+      Response response = navigator.sendRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
 
       verifyEnvelopeCreated(envelope, response);
 
@@ -81,9 +80,12 @@ public class EnvelopeAcceptanceIT {
     }
 
     // Get the list of all envelopes from the API
-    Response apiResponse = navigator.getResponse("/api/envelopes", "GET",
-        () -> navigator.navigateTo(baseUrl + "/api/envelopes"));
+    Response apiResponse = navigator.sendRequestToGetEnvelopes(baseUrl, "/api/envelopes", "GET");
 
+    verifyEnvelopesCreated(apiResponse, testEnvelopes);
+  }
+
+  private void verifyEnvelopesCreated(Response apiResponse, List<Envelope> testEnvelopes) {
     // Parse the JSON response
     String responseBody = apiResponse.text();
 

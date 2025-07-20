@@ -23,10 +23,6 @@ public class Navigator {
         .setSlowMo(50));
   }
 
-  public void navigateTo(String url) {
-    page.navigate(url);
-  }
-
   public void initContext() {
     context = browser.newContext();
     page = context.newPage();
@@ -45,11 +41,11 @@ public class Navigator {
 
   }
 
-  public Locator getInput(String input) {
-    return page.locator(input);
+  public void navigateTo(String url) {
+    page.navigate(url);
   }
 
-  public Response sendRequestToCreateEnvelope(Envelope envelope) {
+  public Response sendRequestToCreateEnvelope(Envelope envelope, String path, String method) {
     // Locate form element
     Locator nameInput = page.locator("input[name='name']");
     // Locate form element
@@ -62,7 +58,7 @@ public class Navigator {
     budgetInput.fill(envelope.getBudget() + "");
 
     // Submit the form and wait for response
-    return getResponse("/api/envelopes", "POST", submitButton::click);
+    return getResponse(path, method, submitButton::click);
 
   }
 
@@ -82,5 +78,9 @@ public class Navigator {
   public void waitForTimeout(int timeout) {
     // Wait a moment before next submission to ensure UI updates
     page.waitForTimeout(timeout);
+  }
+
+  public Response sendRequestToGetEnvelopes(String baseUrl, String path, String method) {
+      return getResponse(path, method, () -> navigateTo(baseUrl + path));
   }
 }
