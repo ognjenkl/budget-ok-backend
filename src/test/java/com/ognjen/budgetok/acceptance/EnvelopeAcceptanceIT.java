@@ -46,9 +46,9 @@ public class EnvelopeAcceptanceIT {
   @Test
   void shouldAllowSubmittingEnvelopeForm() {
 
-    navigator.navigateTo(baseUrl + "/login");
-
     String[] envelope = {"Test Envelope", "100.5"};
+
+    navigator.navigateTo(baseUrl + "/login");
 
     Response response = navigator.sendRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
 
@@ -58,13 +58,10 @@ public class EnvelopeAcceptanceIT {
   @Test
   void shouldCreateMultipleEnvelopes() {
 
-    // Test data
     String[][] testEnvelopes = createThreeEnvelopes();
 
-    // Navigate to the login page
     navigator.navigateTo(baseUrl + "/login");
 
-    // Create each envelope
     for (String[] envelope : testEnvelopes) {
 
       Response response = navigator.sendRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
@@ -74,7 +71,6 @@ public class EnvelopeAcceptanceIT {
       navigator.waitForTimeout(500);
     }
 
-    // Get the list of all envelopes from the API
     Response apiResponse = navigator.sendRequestToGetEnvelopes(baseUrl, "/api/envelopes", "GET");
 
     verifyEnvelopesCreated(apiResponse, testEnvelopes);
