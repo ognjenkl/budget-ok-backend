@@ -1,8 +1,6 @@
 package com.ognjen.budgetok.acceptance;
 
 import com.microsoft.playwright.Response;
-import com.ognjen.budgetok.application.Envelope;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -50,10 +48,7 @@ public class EnvelopeAcceptanceIT {
 
     navigator.navigateTo(baseUrl + "/login");
 
-    Envelope envelope = Envelope.builder()
-        .name("Test Envelope")
-        .budget(100.50)
-        .build();
+    String[] envelope = {"Test Envelope", "100.5"};
 
     Response response = navigator.sendRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
 
@@ -64,13 +59,13 @@ public class EnvelopeAcceptanceIT {
   void shouldCreateMultipleEnvelopes() {
 
     // Test data
-    List<Envelope> testEnvelopes = createThreeEnvelopes();
+    String[][] testEnvelopes = createThreeEnvelopes();
 
     // Navigate to the login page
     navigator.navigateTo(baseUrl + "/login");
 
     // Create each envelope
-    for (Envelope envelope : testEnvelopes) {
+    for (String[] envelope : testEnvelopes) {
 
       Response response = navigator.sendRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
 
@@ -85,46 +80,46 @@ public class EnvelopeAcceptanceIT {
     verifyEnvelopesCreated(apiResponse, testEnvelopes);
   }
 
-  private void verifyEnvelopesCreated(Response apiResponse, List<Envelope> testEnvelopes) {
+  private void verifyEnvelopesCreated(Response apiResponse, String[][] testEnvelopes) {
     // Parse the JSON response
     String responseBody = apiResponse.text();
 
     // Verify each test envelope exists in the response with correct budget
-    for (Envelope envelope : testEnvelopes) {
+    for (String[] envelope : testEnvelopes) {
 
       // Create a pattern to match the envelope in the JSON response
       String envelopePattern = String.format("\"name\"\s*:\s*\"%s\".*?\"budget\"\s*:\s*%s",
-          envelope.getName(), envelope.getBudget());
+          envelope[0], envelope[1]);
 
       // Check if the envelope with matching name and budget exists
       assertTrue(responseBody.matches("(?s).*" + envelopePattern + ".*"),
           String.format("Expected envelope with name '%s' and budget %s not found in response",
-              envelope.getName(), envelope.getBudget()));
+              envelope[0], envelope[1]));
     }
 
     // Verify each test envelope exists in the response with correct name
-    for (Envelope envelope : testEnvelopes) {
+    for (String[] envelope : testEnvelopes) {
       assertTrue(
-          responseBody.contains(String.format("\"name\":\"%s\"", envelope.getName())),
-          String.format("Expected envelope with name '%s' not found in response",
-              envelope.getName())
+          responseBody.contains(String.format("\"name\":\"%s\"", envelope[0])),
+          String.format("Expected envelope with name '%s' not found in response", envelope[0])
       );
     }
   }
 
   @NotNull
-  private List<Envelope> createThreeEnvelopes() {
-    return List.of(
-        Envelope.builder().name("Rent").budget(1200.0).build(),
-        Envelope.builder().name("Groceries").budget(400).build(),
-        Envelope.builder().name("Utilities").budget(200).build());
+  private String[][] createThreeEnvelopes() {
+    return new String[][]{
+        {"Rent", "1200.0"},
+        {"Groceries", "400"},
+        {"Utilities", "200"}
+    };
   }
 
-  private void verifyEnvelopeCreated(Envelope envelope, Response response) {
+  private void verifyEnvelopeCreated(String[] envelope, Response response) {
 
     // Verify response status
     String verificationMessage =
-        "API should return 201 Created status for envelope: " + envelope.getName();
+        "API should return 201 Created status for envelope: " + envelope[0];
     verifyStatus(201, verificationMessage, response);
 
     // Parse and verify response
@@ -133,10 +128,10 @@ public class EnvelopeAcceptanceIT {
     assertTrue(responseText.contains("\"name\""), "Response should contain name field");
     assertTrue(responseText.contains("\"budget\""), "Response should contain budget field");
 
-    assertTrue(responseText.contains(String.format("\"name\":\"%s\"", envelope.getName())),
-        String.format("Response should contain the submitted name: %s", envelope.getName()));
-    assertTrue(responseText.contains(String.format("\"budget\":%s", envelope.getBudget())),
-        String.format("Response should contain the submitted budget: %s", envelope.getBudget()));
+    assertTrue(responseText.contains(String.format("\"name\":\"%s\"", envelope[0])),
+        String.format("Response should contain the submitted name: %s", envelope[0]));
+    assertTrue(responseText.contains(String.format("\"budget\":%s", envelope[1])),
+        String.format("Response should contain the submitted budget: %s", envelope[1]));
   }
 
   private void verifyStatus(int expectedStatus, String verificationMessage, Response response) {

@@ -38,14 +38,13 @@ public class Navigator {
     if (context != null) {
       context.close();
     }
-
   }
 
   public void navigateTo(String url) {
     page.navigate(url);
   }
 
-  public Response sendRequestToCreateEnvelope(Envelope envelope, String path, String method) {
+  public Response sendRequestToCreateEnvelope(String[] envelope, String path, String method) {
     // Locate form element
     Locator nameInput = page.locator("input[name='name']");
     // Locate form element
@@ -54,8 +53,8 @@ public class Navigator {
     Locator submitButton = page.locator("button:has-text('Save Envelope')");
 
     // Fill in the form
-    nameInput.fill(envelope.getName());
-    budgetInput.fill(envelope.getBudget() + "");
+    nameInput.fill(envelope[0]);
+    budgetInput.fill(envelope[1]);
 
     // Submit the form and wait for response
     return getResponse(path, method, submitButton::click);
