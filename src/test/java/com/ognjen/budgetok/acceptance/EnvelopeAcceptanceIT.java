@@ -44,7 +44,7 @@ public class EnvelopeAcceptanceIT {
   }
 
   @Test
-  void shouldAllowSubmittingEnvelopeForm() {
+  void shouldCreateEnvelope() {
 
     String[] envelope = {"Test Envelope", "100.5"};
 
@@ -71,9 +71,9 @@ public class EnvelopeAcceptanceIT {
       navigator.waitForTimeout(500);
     }
 
-    Response apiResponse = navigator.sendRequestToGetEnvelopes(baseUrl, "/api/envelopes", "GET");
+    Response getEnvelopesResponse = navigator.sendRequestToGetEnvelopes(baseUrl, "/api/envelopes", "GET");
 
-    verifyEnvelopesCreated(apiResponse, testEnvelopes);
+    verifyEnvelopesCreated(getEnvelopesResponse, testEnvelopes);
   }
 
   private void verifyEnvelopesCreated(Response apiResponse, String[][] testEnvelopes) {
