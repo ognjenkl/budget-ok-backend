@@ -1,5 +1,6 @@
-package com.ognjen.budgetok;
+package com.ognjen.budgetok.component;
 
+import com.ognjen.budgetok.TestcontainersConfiguration;
 import com.ognjen.budgetok.application.Envelope;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
