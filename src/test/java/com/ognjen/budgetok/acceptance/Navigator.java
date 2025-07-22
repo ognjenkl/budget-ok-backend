@@ -80,4 +80,15 @@ public class Navigator {
   public Response sendRequestToGetEnvelopes(String baseUrl, String path, String method) {
     return getResponse(path, method, () -> navigateTo(baseUrl + path));
   }
+  
+  public boolean isEnvelopeVisible(String name, String budget) {
+    try {
+      // Find the row containing the envelope name and budget
+      String xpath = String.format("//tr[.//*[contains(text(),'%s')] and .//*[contains(text(),'%s')]]", name, budget);
+      page.waitForSelector("xpath=" + xpath, new Page.WaitForSelectorOptions().setTimeout(2000));
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }
