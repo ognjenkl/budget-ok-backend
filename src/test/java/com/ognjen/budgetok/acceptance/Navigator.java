@@ -44,7 +44,7 @@ public class Navigator {
     page.navigate(url);
   }
 
-  public Response submitRequestToCreateEnvelope(String[] envelope, String path, String method) {
+  private Response submitRequestToCreateEnvelope(String[] envelope, String path, String method) {
 
     Locator nameInput = page.getByPlaceholder("Name");
     Locator budgetInput = page.getByPlaceholder("Budget");
@@ -80,15 +80,20 @@ public class Navigator {
   public Response sendRequestToGetEnvelopes(String baseUrl, String path, String method) {
     return getResponse(path, method, () -> navigateTo(baseUrl + path));
   }
-  
+
   public boolean isEnvelopeVisible(String name, String budget) {
     try {
       // Find the row containing the envelope name and budget
-      String xpath = String.format("//tr[.//*[contains(text(),'%s')] and .//*[contains(text(),'%s')]]", name, budget);
+      String xpath = String.format(
+          "//tr[.//*[contains(text(),'%s')] and .//*[contains(text(),'%s')]]", name, budget);
       page.waitForSelector("xpath=" + xpath, new Page.WaitForSelectorOptions().setTimeout(2000));
       return true;
     } catch (Exception e) {
       return false;
     }
+  }
+
+  public void createEnvelope(String[] envelope) {
+    submitRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
   }
 }

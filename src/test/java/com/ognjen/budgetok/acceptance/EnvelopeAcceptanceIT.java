@@ -49,7 +49,7 @@ public class EnvelopeAcceptanceIT {
     // When
     navigator.navigateTo(baseUrl);
 
-    navigator.submitRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
+    navigator.createEnvelope(envelope);
 
     // Then
     assertTrue(
@@ -69,7 +69,7 @@ public class EnvelopeAcceptanceIT {
 
     // Create all envelopes
     for (String[] envelope : testEnvelopes) {
-      navigator.submitRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
+      navigator.createEnvelope(envelope);
       navigator.waitForTimeout(500);
     }
 
