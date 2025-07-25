@@ -16,5 +16,5 @@ public class Envelope {
     @Id
     private Long id;
     private String name;
-    private double budget;
+    private int budget;
 }

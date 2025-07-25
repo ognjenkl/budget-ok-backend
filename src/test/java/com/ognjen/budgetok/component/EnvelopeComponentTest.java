@@ -36,7 +36,7 @@ class EnvelopeComponentTest {
     void shouldCreateEnvelope() {
         var envelope = new Envelope();
         envelope.setName("Groceries");
-        envelope.setBudget(500.0);
+        envelope.setBudget(500);
 
         var response = restTemplate.postForEntity("/api/envelopes", envelope, Envelope.class);
 
@@ -45,7 +45,7 @@ class EnvelopeComponentTest {
         assertThat(createdEnvelope).isNotNull();
         assertThat(createdEnvelope.getId()).isNotNull();
         assertThat(createdEnvelope.getName()).isEqualTo("Groceries");
-        assertThat(createdEnvelope.getBudget()).isEqualTo(500.0);
+        assertThat(createdEnvelope.getBudget()).isEqualTo(500);
 
         var getResponse = restTemplate.getForEntity("/api/envelopes/" + createdEnvelope.getId(), Envelope.class);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -56,11 +56,11 @@ class EnvelopeComponentTest {
     void shouldRetrieveAllEnvelopes() {
         var envelope1 = new Envelope();
         envelope1.setName("Envelope 1");
-        envelope1.setBudget(100.00);
+        envelope1.setBudget(100);
         
         var envelope2 = new Envelope();
         envelope2.setName("Envelope 2");
-        envelope2.setBudget(200.00);
+        envelope2.setBudget(200);
         
         restTemplate.postForEntity("/api/envelopes", envelope1, Envelope.class);
         restTemplate.postForEntity("/api/envelopes", envelope2, Envelope.class);
@@ -77,27 +77,27 @@ class EnvelopeComponentTest {
     void shouldUpdateEnvelope() {
         var envelope = new Envelope();
         envelope.setName("Groceries");
-        envelope.setBudget(500.0);
+        envelope.setBudget(500);
 
         var createdEnvelope = restTemplate.postForEntity("/api/envelopes", envelope, Envelope.class).getBody();
         assertThat(createdEnvelope).isNotNull();
 
         createdEnvelope.setName("Updated Groceries");
-        createdEnvelope.setBudget(600.0);
+        createdEnvelope.setBudget(600);
 
         restTemplate.put("/api/envelopes/" + createdEnvelope.getId(), createdEnvelope);
 
         var updatedEnvelope = restTemplate.getForEntity("/api/envelopes/" + createdEnvelope.getId(), Envelope.class).getBody();
         assertThat(updatedEnvelope).isNotNull();
         assertThat(updatedEnvelope.getName()).isEqualTo("Updated Groceries");
-        assertThat(updatedEnvelope.getBudget()).isEqualTo(600.0);
+        assertThat(updatedEnvelope.getBudget()).isEqualTo(600);
     }
 
     @Test
     void shouldDeleteEnvelope() {
         var envelope = new Envelope();
         envelope.setName("Groceries");
-        envelope.setBudget(500.0);
+        envelope.setBudget(500);
 
         var createdEnvelope = restTemplate.postForEntity("/api/envelopes", envelope, Envelope.class).getBody();
         assertThat(createdEnvelope).isNotNull();
@@ -112,7 +112,7 @@ class EnvelopeComponentTest {
     void shouldRenameEnvelope() {
         var envelope = new Envelope();
         envelope.setName("Old Name");
-        envelope.setBudget(300.0);
+        envelope.setBudget(300);
 
         var createdEnvelope = restTemplate.postForEntity("/api/envelopes", envelope, Envelope.class).getBody();
         assertThat(createdEnvelope).isNotNull();

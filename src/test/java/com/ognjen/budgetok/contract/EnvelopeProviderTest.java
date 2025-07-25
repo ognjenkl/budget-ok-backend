@@ -55,14 +55,23 @@ public class EnvelopeProviderTest {
 
     @State("i have a list of envelopes")
     public void toHaveEnvelopeListState() {
-        // Set up test data
+        // Set up test data with budget as an integer to match the contract
         Envelope testEnvelope = new Envelope();
         testEnvelope.setId(1L);
         testEnvelope.setName("Rent");
-        testEnvelope.setBudget(1200.0);
+        testEnvelope.setBudget(1200); // Using integer value to match the contract
         
         // Configure mocks for the interaction
-        when(envelopeService.create(any(Envelope.class))).thenReturn(testEnvelope);
+        when(envelopeService.create(any(Envelope.class))).thenAnswer(invocation -> {
+            Envelope created = invocation.getArgument(0);
+            // Ensure the returned envelope has the same ID as our test envelope
+            Envelope result = new Envelope();
+            result.setId(1L);
+            result.setName(created.getName());
+            // Ensure budget is set as an integer
+            result.setBudget(created.getBudget());
+            return result;
+        });
         
         // Log that the state was set up
         System.out.println("Provider state 'i have a list of envelopes' set up with test envelope: " + testEnvelope);

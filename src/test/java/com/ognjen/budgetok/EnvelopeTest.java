@@ -25,13 +25,13 @@ public class EnvelopeTest {
 
     Envelope envelope = new Envelope();
     envelope.setName("Envelope 1");
-    envelope.setBudget(100.0);
+    envelope.setBudget(100);
 
     Envelope createdEnvelope = service.create(envelope);
 
     assertThat(createdEnvelope.getId()).isNotNull();
     assertThat(createdEnvelope.getName()).isEqualTo("Envelope 1");
-    assertThat(createdEnvelope.getBudget()).isEqualTo(100.0);
+    assertThat(createdEnvelope.getBudget()).isEqualTo(100);
 
     envelopes = service.getAll();
     assertThat(envelopes).hasSize(1);
