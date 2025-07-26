@@ -24,56 +24,41 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {BudgetOkApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@ActiveProfiles("test")
 @Provider("Budget API")
 @PactFolder("src/test/resources/pacts")
 @VerificationReports
 public class EnvelopeProviderTest {
 
-    @LocalServerPort
-    private int port;
+  @LocalServerPort
+  private int port;
 
-    @MockBean
-    private EnvelopeService envelopeService;
+  @MockBean
+  private EnvelopeService envelopeService;
 
-    @BeforeEach
-    void before(PactVerificationContext context) {
-        // Reset mocks before each test
-        Mockito.reset(envelopeService);
-        
-        // Configure the test target to point to our running application
-        context.setTarget(new HttpTestTarget("localhost", port, ""));
-    }
+  @BeforeEach
+  void before(PactVerificationContext context) {
+    // Reset mocks before each test
+    Mockito.reset(envelopeService);
 
-    @TestTemplate
-    @ExtendWith(PactVerificationInvocationContextProvider.class)
-    void pactVerificationTestTemplate(PactVerificationContext context) {
-        // Verify the interaction against the running application
-        context.verifyInteraction();
-    }
+    // Configure the test target to point to our running application
+    context.setTarget(new HttpTestTarget("localhost", port, ""));
+  }
 
-    @State("i have a list of envelopes")
-    public void toHaveEnvelopeListState() {
-        // Set up test data with budget as an integer to match the contract
-        Envelope testEnvelope = new Envelope();
-        testEnvelope.setId(1L);
-        testEnvelope.setName("Rent");
-        testEnvelope.setBudget(1200); // Using integer value to match the contract
-        
-        // Configure mocks for the interaction
-        when(envelopeService.create(any(Envelope.class))).thenAnswer(invocation -> {
-            Envelope created = invocation.getArgument(0);
-            // Ensure the returned envelope has the same ID as our test envelope
-            Envelope result = new Envelope();
-            result.setId(1L);
-            result.setName(created.getName());
-            // Ensure budget is set as an integer
-            result.setBudget(created.getBudget());
-            return result;
-        });
-        
-        // Log that the state was set up
-        System.out.println("Provider state 'i have a list of envelopes' set up with test envelope: " + testEnvelope);
-    }
+  @TestTemplate
+  @ExtendWith(PactVerificationInvocationContextProvider.class)
+  void pactVerificationTestTemplate(PactVerificationContext context) {
+    // Verify the interaction against the running application
+    context.verifyInteraction();
+  }
+
+  @State("i have a list of envelopes")
+  public void toHaveEnvelopeListState() {
+    when(envelopeService.create(any(Envelope.class))).thenAnswer(invocation -> {
+      Envelope created = invocation.getArgument(0);
+      created.setId(1L);
+      return created;
+    });
+  }
 }
