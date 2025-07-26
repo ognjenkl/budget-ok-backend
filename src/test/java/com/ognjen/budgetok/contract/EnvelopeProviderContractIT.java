@@ -7,7 +7,6 @@ import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.VerificationReports;
 import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
-import com.ognjen.budgetok.BudgetOkApplication;
 import com.ognjen.budgetok.application.Envelope;
 import com.ognjen.budgetok.application.EnvelopeService;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,11 +23,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@ActiveProfiles("test")
 @Provider("Budget API")
 @PactFolder("src/test/resources/pacts")
 @VerificationReports
-public class EnvelopeProviderTest {
+public class EnvelopeProviderContractIT {
 
   @LocalServerPort
   private int port;
