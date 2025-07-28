@@ -96,4 +96,14 @@ public class Navigator {
   public void createEnvelope(String[] envelope) {
     submitRequestToCreateEnvelope(envelope, "/api/envelopes", "POST");
   }
+  
+  public boolean isTextVisible(String text) {
+    try {
+      page.waitForSelector(String.format("text='%s'", text), 
+          new Page.WaitForSelectorOptions().setTimeout(2000));
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }

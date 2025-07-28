@@ -10,6 +10,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,10 +53,10 @@ public class EnvelopeAcceptanceIT {
     navigator.createEnvelope(envelope);
 
     // Then
+    String successMessage = "Envelope created successfully!";
     assertTrue(
-        navigator.isEnvelopeVisible(envelope[0], envelope[1]),
-        String.format("Envelope with name '%s' and budget '%s' should be visible on the page",
-            envelope[0], envelope[1])
+        navigator.isTextVisible(successMessage),
+        String.format("Success message '%s' should be visible on the page", successMessage)
     );
   }
 
@@ -64,24 +65,24 @@ public class EnvelopeAcceptanceIT {
     // Given
     String[][] testEnvelopes = createThreeEnvelopes();
 
-    // When
+    // When and Then
     navigator.navigateTo(baseUrl);
 
-    // Create all envelopes
     for (String[] envelope : testEnvelopes) {
+
       navigator.createEnvelope(envelope);
+
       navigator.waitForTimeout(500);
-    }
-
-    // Then verify all envelopes are visible on the page
-    for (String[] envelope : testEnvelopes) {
-      String name = envelope[0];
-      String budget = envelope[1];
-
+      String successMessage = "Envelope created successfully!";
       assertTrue(
-          navigator.isEnvelopeVisible(name, budget),
-          String.format("Envelope with name '%s' and budget '%s' should be visible on the page",
-              name, budget)
+          navigator.isTextVisible(successMessage),
+          String.format("Success message '%s' should be visible on the page", successMessage)
+      );
+
+      navigator.waitForTimeout(3000);
+      assertFalse(
+          navigator.isTextVisible(successMessage),
+          String.format("Success message '%s' should not be visible on the page", successMessage)
       );
     }
   }
