@@ -111,6 +111,9 @@ budget-ok-backend/
 ```
 
 ## Recent Changes
+- Added Jakarta Bean Validation for envelope creation (@NotBlank, @Min)
+- Enhanced GlobalExceptionHandler to handle validation errors (MethodArgumentNotValidException)
+- Added spring-boot-starter-validation dependency
 - Reorganized project structure: moved all code to `backend/` directory
 - Added new models: `BankOkCart`, `BankOkProduct`, `Expense` entity
 - Enhanced controllers: `BankOkApiController`, `EchoApiController`

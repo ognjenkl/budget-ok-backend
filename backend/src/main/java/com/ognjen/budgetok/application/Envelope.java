@@ -3,6 +3,8 @@ package com.ognjen.budgetok.application;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +22,9 @@ public class Envelope {
 
     @Id
     private Long id;
+    @NotBlank(message = "Name is required")
     private String name;
+    @Min(value = 0, message = "Budget must not be negative")
     private int budget;
 
     @MappedCollection(idColumn = "envelope_id")

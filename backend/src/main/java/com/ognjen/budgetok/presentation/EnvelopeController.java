@@ -5,6 +5,7 @@ import com.ognjen.budgetok.application.EnvelopeService;
 import com.ognjen.budgetok.application.ExpenseDto;
 import com.ognjen.budgetok.application.TransferRequest;
 import com.ognjen.budgetok.application.TransferResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class EnvelopeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Envelope createEnvelope(@RequestBody Envelope envelope) {
+    public Envelope createEnvelope(@Valid @RequestBody Envelope envelope) {
         return envelopeService.create(envelope);
     }
 
