@@ -121,6 +121,12 @@ budget-ok-backend/
 - Refactored tests with improved structure and contract testing
 - Updated application to `BudgetOkBackendApplication`
 
+## Git Commit Guidelines
+- **Always use one-line commit messages** following Conventional Commits format (e.g., `feat(module): description`)
+- **Always ask for permission before committing** - verify changes with user first
+- Exclude local files (e.g., `.claude/settings.local.json`) from commits
+- Update `.claude/CLAUDE.md` Recent Changes section before committing major features
+
 ## Status
 - Version: 0.0.1-SNAPSHOT
 - Branch: main
