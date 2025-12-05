@@ -3,7 +3,6 @@ package com.ognjen.budgetok.presentation;
 import com.ognjen.budgetok.application.BankOkCart;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -17,9 +16,9 @@ public class BankOkApiController {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @GetMapping("/carts/{id}")
-    public BankOkCart getCartByUserId(@PathVariable("id") int id) {
-        String url = bankOkApiHost + "/carts/" + id;
+    @GetMapping("/expenses")
+    public BankOkCart getCartByUserId() {
+        String url = bankOkApiHost + "/carts/2";
         return restTemplate.getForObject(url, BankOkCart.class);
     }
 }
