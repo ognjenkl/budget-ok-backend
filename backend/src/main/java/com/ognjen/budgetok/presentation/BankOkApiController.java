@@ -18,7 +18,7 @@ public class BankOkApiController {
 
     @GetMapping("/expenses")
     public BankOkCart getCartByUserId() {
-        String url = bankOkApiHost + "/carts/2";
+        String url = bankOkApiHost + "/api/expenses";
         return restTemplate.getForObject(url, BankOkCart.class);
     }
 }

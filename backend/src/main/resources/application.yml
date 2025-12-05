@@ -26,7 +26,7 @@ spring:
 # Bank OK external API configuration
 bankok:
   api:
-    host: ${BANKOK_API_HOST:https://dummyjson.com}
+    host: ${BANKOK_API_HOST:http://localhost:8081}
 
 # Actuator configuration
 management:
