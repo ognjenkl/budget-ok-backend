@@ -49,4 +49,32 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     return new SubscriptionResponse(finalPrice);
   }
+
+  @Override
+  public TaxResponse calculateTax(TaxRequest request) {
+    log.info("Calculating tax for request price: {}", request.price());
+
+    // Call Bank OK's tax endpoint to get tax rate
+    String url = bankOkApiHost + "/api/tax";
+    log.info("Calling Bank OK API to get tax rate from: {}", url);
+
+    TaxRateResponse taxRateResponse = restTemplate.exchange(
+        url,
+        HttpMethod.GET,
+        null,
+        new ParameterizedTypeReference<TaxRateResponse>() {
+        }
+    ).getBody();
+
+    log.info("Received tax rate from Bank OK: {}", taxRateResponse.taxRate());
+
+    // Calculate final price: price + (price * taxRate)
+    BigDecimal taxAmount = request.price().multiply(taxRateResponse.taxRate());
+    BigDecimal finalPrice = request.price().add(taxAmount);
+
+    log.info("Calculated tax: basePrice={}, taxRate={}, taxAmount={}, finalPrice={}",
+        request.price(), taxRateResponse.taxRate(), taxAmount, finalPrice);
+
+    return new TaxResponse(finalPrice);
+  }
 }

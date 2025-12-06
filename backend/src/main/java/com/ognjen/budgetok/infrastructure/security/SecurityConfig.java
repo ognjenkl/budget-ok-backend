@@ -51,7 +51,7 @@ public class SecurityConfig {
                 "/api/envelopes/**",
                 "/api/bankok/**",
                 "/api/echo",
-                "/api/calculate-subscription"
+                "/api/subscription/**"
             ).permitAll()
             // Actuator endpoints (read-only access)
             .requestMatchers("/actuator/health/**").permitAll()
