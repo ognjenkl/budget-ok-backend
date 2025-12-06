@@ -15,14 +15,7 @@ public class EnvelopeServiceImpl implements EnvelopeService {
   @Override
   @Transactional
   public Envelope create(Envelope envelope) {
-
-    Envelope env = envelopeRepository.findByName(envelope.getName());
-
-    if (env != null) {
-      return env;
-    } else {
       return envelopeRepository.save(envelope);
-    }
   }
 
 
@@ -56,7 +49,6 @@ public class EnvelopeServiceImpl implements EnvelopeService {
       throw new IllegalArgumentException("ID in path does not match ID in request body");
     }
     return envelopeRepository.save(envelope);
-//    return envelopeRepository.update(id, envelope);
   }
 
   @Override
