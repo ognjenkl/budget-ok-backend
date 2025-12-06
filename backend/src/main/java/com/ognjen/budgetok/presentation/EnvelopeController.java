@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,8 +38,15 @@ public class EnvelopeController {
     }
 
     @GetMapping
-    public List<Envelope> getAllEnvelopes() {
-        return envelopeService.getAll();
+    public ResponseEntity<?> getEnvelopes(@RequestParam(required = false) String name) {
+        if (name != null) {
+            Envelope envelope = envelopeService.getByName(name);
+            if (envelope == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(envelope);
+        }
+        return ResponseEntity.ok(envelopeService.getAll());
     }
 
     @GetMapping("/{id}")

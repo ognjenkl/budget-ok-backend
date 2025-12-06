@@ -15,8 +15,16 @@ public class EnvelopeServiceImpl implements EnvelopeService {
   @Override
   @Transactional
   public Envelope create(Envelope envelope) {
-    return envelopeRepository.save(envelope);
+
+    Envelope env = envelopeRepository.findByName(envelope.getName());
+
+    if (env != null) {
+      return env;
+    } else {
+      return envelopeRepository.save(envelope);
+    }
   }
+
 
   @Override
   public List<Envelope> getAll() {
@@ -27,6 +35,12 @@ public class EnvelopeServiceImpl implements EnvelopeService {
   @Transactional(readOnly = true)
   public Envelope getById(long id) {
     return envelopeRepository.findById(id);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Envelope getByName(String name) {
+    return envelopeRepository.findByName(name);
   }
 
   @Override
@@ -53,6 +67,7 @@ public class EnvelopeServiceImpl implements EnvelopeService {
     expense.setAmount(expenseDto.amount());
     expense.setMemo(expenseDto.memo());
     expense.setTransactionType(expenseDto.transactionType());
+    expense.setBankExpenseId(expenseDto.bankExpenseId());
     envelope.add(expense);
     return envelopeRepository.save(envelope);
   }

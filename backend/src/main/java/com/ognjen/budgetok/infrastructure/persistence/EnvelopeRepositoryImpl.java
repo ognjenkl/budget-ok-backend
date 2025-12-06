@@ -33,4 +33,9 @@ public class EnvelopeRepositoryImpl implements EnvelopeRepository {
   public void deleteById(Long id) {
     jdbcRepository.deleteById(id);
   }
+
+  @Override
+  public Envelope findByName(String name) {
+    return jdbcRepository.findByName(name).orElse(null);
+  }
 }

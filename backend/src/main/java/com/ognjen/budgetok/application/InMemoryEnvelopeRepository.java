@@ -40,4 +40,9 @@ public class InMemoryEnvelopeRepository implements EnvelopeRepository {
   public void deleteById(Long id) {
     envelopes.removeIf(env -> env.getId().equals(id));
   }
+
+  @Override
+  public Envelope findByName(String name) {
+    return null;
+  }
 }

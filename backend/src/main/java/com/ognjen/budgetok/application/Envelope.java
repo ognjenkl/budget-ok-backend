@@ -51,7 +51,7 @@ public class Envelope {
         return expenses != null && !expenses.isEmpty();
     }
 
-    public int getExpenseAmount(String memo) {
+    public double getExpenseAmount(String memo) {
         if (expenses == null) {
             throw new IllegalArgumentException("Expense not found");
         }

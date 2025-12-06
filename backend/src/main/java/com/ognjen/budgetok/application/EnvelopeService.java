@@ -10,6 +10,8 @@ public interface EnvelopeService {
 
   Envelope getById(long id);
 
+  Envelope getByName(String name);
+
   void delete(long id);
 
   Envelope update(long id, Envelope envelope);

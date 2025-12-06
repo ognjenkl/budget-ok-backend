@@ -16,8 +16,10 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Expense {
     @Id
     private Long id;
-    private int amount;
+    private double amount;
     private String memo;
     @Column("transaction_type")
     private String transactionType;
+    @Column("bank_expense_id")
+    private Long bankExpenseId;
 }
