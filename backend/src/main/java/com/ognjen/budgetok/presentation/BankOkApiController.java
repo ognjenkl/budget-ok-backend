@@ -1,6 +1,6 @@
 package com.ognjen.budgetok.presentation;
 
-import com.ognjen.budgetok.application.BankOkCart;
+import com.ognjen.budgetok.application.BankOkProductsResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +17,10 @@ public class BankOkApiController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/expenses")
-    public BankOkCart getCartByUserId() {
+    public BankOkProductsResponse getCartByUserId() {
         String url = bankOkApiHost + "/api/expenses";
-        return restTemplate.getForObject(url, BankOkCart.class);
+      BankOkProductsResponse forObject = restTemplate.getForObject(url,
+          BankOkProductsResponse.class);
+      return forObject;
     }
 }
