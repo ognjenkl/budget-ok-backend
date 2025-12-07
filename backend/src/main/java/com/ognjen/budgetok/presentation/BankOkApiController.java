@@ -71,18 +71,4 @@ public class BankOkApiController {
     }
     log.info("Bank OK sync process completed successfully");
   }
-
-  public Object getSubscriptionDiscount(Object price) {
-    log.info("Fetching subscription discount from Bank OK API");
-    String url = bankOkApiHost + "/api/subscription-discount";
-    Object discount = restTemplate.exchange(
-        url,
-        HttpMethod.GET,
-        null,
-        new ParameterizedTypeReference<Object>() {
-        }
-    ).getBody();
-    log.info("Received subscription discount from Bank OK API: {}", discount);
-    return discount;
-  }
 }
